@@ -1,0 +1,208 @@
+Test Case ID,Module,Type,Priority,Preconditions,Test Data,Test Steps,Expected Result,Actual Result,Status,Automation Mapping
+TC_REG_001,Registration,Positive,High,App URL available; user is Guest on Landing/Register page,First: Poonam; Last: Rana; Email: unique@example.com; Password: Test@1234; Confirm: Test@1234,"1. Open Registration form
+2. Enter First Name, Last Name, Email, Password, Confirm Password
+3. Click Register/Submit
+4. Observe redirect",Account is created; user is redirected to Login page; success message shown (if designed),,Not Executed,Manual-only (not in mock)
+TC_REG_002,Registration,Negative,High,User already registered with email existing@example.com,Email: existing@example.com; valid password meeting policy,"1. Open Registration
+2. Enter details with existing email
+3. Submit",Error shown that email already exists; user stays on Registration; no duplicate account,,Not Executed,Manual-only
+TC_REG_003,Registration,Negative,High,On Registration page,All fields blank,"1. Open Registration
+2. Leave all fields empty
+3. Click Register","Inline/field validation errors for mandatory fields: First Name, Last Name, Email, Password, Confirm Password; form not submitted",,Not Executed,Manual-only
+TC_REG_004,Registration,Negative,High,On Registration page,Password: Test@1234; Confirm: Test@9999,"1. Fill valid First/Last/Email
+2. Enter mismatching Password and Confirm Password
+3. Submit",Error: passwords do not match; account not created,,Not Executed,Manual-only
+TC_REG_005,Registration,Boundary,High,On Registration page,Password: Ab1@xxx (7 chars) vs Test@123 (8 chars meeting rules),"1. Attempt register with 7-char password
+2. Retry with 8-char valid password (1 upper, 1 number, 1 special)",7-char rejected per policy; 8-char accepted if other fields valid,,Not Executed,Manual-only
+TC_REG_006,Registration,Boundary,Medium,On Registration page,Password without uppercase: test@1234,"1. Enter password missing uppercase
+2. Submit",Validation error for password policy; registration blocked,,Not Executed,Manual-only
+TC_REG_007,Registration,Boundary,Medium,On Registration page,Password without number: Test@abcd,"1. Enter password missing number
+2. Submit",Validation error; registration blocked,,Not Executed,Manual-only
+TC_REG_008,Registration,Boundary,Medium,On Registration page,Password without special char: Test1234,"1. Enter password missing special character
+2. Submit",Validation error; registration blocked,,Not Executed,Manual-only
+TC_REG_009,Registration,Negative,High,On Registration page,Email: not-an-email,"1. Enter invalid email format
+2. Fill other valid fields
+3. Submit",Email format validation error; registration blocked,,Not Executed,Manual-only
+TC_REG_010,Registration,UI,Medium,On Registration page,N/A,"1. Inspect Registration UI labels and fields
+2. Verify First Name, Last Name, Email, Password, Confirm Password visible
+3. Check password fields mask characters",All required fields present and labeled; password inputs masked,,Not Executed,Manual-only
+TC_REG_011,Registration,Integration,High,Fresh unique email available,Valid new user credentials,"1. Complete successful registration
+2. Land on Login
+3. Login with same credentials",Register→Login flow works; user reaches Dashboard after login,,Not Executed,Manual-only
+TC_REG_012,Registration,Error-handling,Medium,Email verification simulated ON,Newly registered unverified email,"1. Register successfully
+2. Attempt login before verifying email (if flow requires verification)",System blocks or prompts for verification per design; clear message shown,,Not Executed,Manual-only
+TC_LOGIN_001,Login,Positive,High,Registered user exists; Login page open (or mock UI loaded),"Valid email + password; Locator: input-email, input-password, btn-login","1. Enter valid email in input-email
+2. Enter valid password in input-password
+3. Click btn-login",User authenticated; redirected to Dashboard; text-total-spent visible,,Not Executed,Automated (login.spec Successful Login / shift-left mock asserts fields + dashboard)
+TC_LOGIN_002,Login,Negative,High,Login page available,Valid email + wrong password,"1. Enter registered email
+2. Enter incorrect password
+3. Click btn-login",msg-error visible with invalid credentials message; user not on Dashboard,,Not Executed,Automated (login.spec Invalid Login against mock msg-error)
+TC_LOGIN_003,Login,Negative,High,Login page available,Unregistered email + any password,"1. Enter unknown email
+2. Enter password
+3. Click Login",Error banner shown; no dashboard access,,Not Executed,Manual-only (real app); mock always shows msg-error
+TC_LOGIN_004,Login,Negative,High,Login page available,Email empty; Password: Test@1234,"1. Leave email blank
+2. Enter password
+3. Click Login",Validation for required email; login not processed,,Not Executed,Manual-only
+TC_LOGIN_005,Login,Negative,High,Login page available,Email filled; Password empty,"1. Enter email
+2. Leave password blank
+3. Click Login",Validation for required password; login not processed,,Not Executed,Manual-only
+TC_LOGIN_006,Login,Negative,Medium,Login page available,Email: abc@@test,"1. Enter invalid email format
+2. Enter password
+3. Submit",Format validation error OR authentication error; no dashboard,,Not Executed,Manual-only
+TC_LOGIN_007,Login,Error-handling,High,Known valid user; lockout rule: 5 failures → 15 min lock,Wrong password x5,"1. Attempt login with wrong password 5 times
+2. Attempt 6th time with correct password within lock window",Account locked after 5 failures; correct password rejected until 15 minutes; clear lock message,,Not Executed,Manual-only
+TC_LOGIN_008,Login,Positive,Medium,Account previously locked; 15 minutes elapsed,Correct credentials after unlock window,"1. Wait/unlock window complete
+2. Login with valid credentials",Login succeeds; Dashboard loads,,Not Executed,Manual-only
+TC_LOGIN_009,Login,Positive,Medium,Login page shows Forgot Password link,Registered email,"1. Click Forgot Password
+2. Enter registered email
+3. Submit reset request",Simulated reset email triggered; confirmation message shown,,Not Executed,Manual-only
+TC_LOGIN_010,Login,UI,Medium,Login page / mock HTML,N/A — verify data-testid contract,"1. Inspect DOM for data-testid=input-email, input-password, btn-login, msg-error
+2. Confirm labels associated with inputs",Locator contract elements present and usable,,Not Executed,Automated via POM getByTestId + mockHTML
+TC_LOGIN_011,Login,UI,Low,Login page,N/A,"1. Enter password
+2. Observe masking
+3. Tab through fields",Password masked; logical tab order Email → Password → Login,,Not Executed,Manual-only
+TC_SESS_001,Session,Negative,High,User logged in; inactivity timeout = 30 minutes,Idle > 30 minutes,"1. Login successfully
+2. Remain idle 30+ minutes
+3. Attempt to add expense or refresh dashboard",Session expired; user redirected to Login; protected actions blocked,,Not Executed,Manual-only
+TC_SESS_002,Session,Positive,Medium,User logged in,N/A,"1. Click Logout
+2. Confirm logout if prompted",Session cleared; Login page shown; dashboard not accessible without re-auth,,Not Executed,Manual-only
+TC_SESS_003,Session,Negative,Medium,User just logged out,Browser Back button,"1. Logout
+2. Press browser Back",Cached dashboard not usable; redirect to Login or empty secure state,,Not Executed,Manual-only
+TC_SESS_004,Session,Error-handling,Medium,User logged in with JWT,Expired/invalid token simulated,"1. Tamper/expire token (dev tools) if possible
+2. Call an authenticated API/action",401/unauthorized handled; user re-authenticated; no sensitive data leak in URL,,Not Executed,Manual-only
+TC_DASH_001,Dashboard,Positive,High,Registered user logged in; has expenses in current month,User with known totals,"1. Login
+2. Land on Dashboard
+3. Observe Total Spent (text-total-spent)",Total Spent shows current-month sum for logged-in user only; currency formatted,,Not Executed,Automated (dashboard.spec Dashboard Visible — mock)
+TC_DASH_002,Dashboard,Positive,High,User logged in with categorized expenses,Expenses in ≥2 categories,"1. Open Dashboard
+2. Locate pie chart by category",Pie chart renders category breakdown matching user's expenses,,Not Executed,Manual-only (pie chart not in current mock)
+TC_DASH_003,Dashboard,Positive,High,User has ≥5 expenses,N/A,"1. Open Dashboard
+2. Check Recent Transactions list",Last 5 transactions shown (most recent first),,Not Executed,Partial mock: table-expenses seed rows; full 'last 5' rule Manual-only on real app
+TC_DASH_004,Dashboard,Positive,Medium,New user with zero expenses,Empty account,"1. Login as empty user
+2. View Dashboard",Total Spent = 0 (or empty state); chart empty/placeholder; no other users' data,,Not Executed,Manual-only
+TC_DASH_005,Dashboard,UI,Medium,Logged in / mock page,N/A,"1. Verify btn-new-transaction visible
+2. Click New Transaction",Button present; navigates/opens Add Expense flow/modal,,Not Executed,Automated click in expense.spec Add Expense
+TC_DASH_006,Dashboard,Boundary,Medium,Logged in,Performance NFR: load < 2s,"1. Login
+2. Measure dashboard load time (network panel / stopwatch)",Dashboard interactive within 2 seconds under normal conditions,,Not Executed,Manual-only
+TC_DASH_007,Dashboard,UI,Medium,Logged in,Desktop + mobile widths,"1. Resize to mobile viewport
+2. Check Total Spent and New Transaction remain usable",Responsive layout; no critical overflow/cutoff of key controls,,Not Executed,Manual-only + Playwright projects cover browsers not viewports by default
+TC_DASH_008,Dashboard,Integration,High,Logged in,N/A,"1. Note Total Spent
+2. Add a valid expense
+3. Return to Dashboard
+4. Compare Total Spent",Total Spent increases by new expense amount; recent list includes new item,,Not Executed,Manual-only on real app (static mock does not update totals)
+TC_EXP_001,Expense Create,Positive,High,User logged in; Dashboard accessible,Date: today; Amount: 125.50; Category: Food; Description: Team lunch,"1. Click btn-new-transaction
+2. Enter Date, Amount (input-amount), Category (select-category), Description
+3. Click btn-save-expense",Expense saved; appears in table-expenses; success feedback shown,,Not Executed,Automated partial (enter amount/category/save + verifyTable on mock)
+TC_EXP_002,Expense Create,Positive,High,Add Expense form open,Amount: 0.01 (min positive),"1. Enter amount 0.01
+2. Select category
+3. Date = today
+4. Save",Expense accepted; stored with 2 decimal precision,,Not Executed,Manual-only / Boundary also covered below
+TC_EXP_003,Expense Create,Negative,High,Add Expense form open,Amount: 0,"1. Enter 0
+2. Select category & date
+3. Save",Validation error: amount must be > 0; expense not saved,,Not Executed,Manual-only
+TC_EXP_004,Expense Create,Negative,High,Add Expense form open,Amount: -10,"1. Enter negative amount
+2. Attempt save",Negative amount rejected; clear error,,Not Executed,Manual-only
+TC_EXP_005,Expense Create,Negative,High,Add Expense form open,Date: tomorrow (future),"1. Select future date
+2. Enter valid amount/category
+3. Save",Future dates prohibited; validation error; not saved,,Not Executed,Manual-only
+TC_EXP_006,Expense Create,Positive,Medium,Add Expense form open,Date: today,"1. Set date to today
+2. Complete other required fields
+3. Save",Today accepted; expense created,,Not Executed,Manual-only
+TC_EXP_007,Expense Create,Boundary,High,Add Expense form open,Amount: 999999.99 (max) and 1000000.00 (over max),"1. Save with 999999.99
+2. Attempt 1000000.00",Max accepted; over-max rejected,,Not Executed,Manual-only
+TC_EXP_008,Expense Create,Boundary,High,Add Expense form open,Amount: 10.999 (3 decimals) vs 10.99,"1. Enter 3+ decimal places
+2. Save or blur field",Only max 2 decimal places allowed (round/block per rules),,Not Executed,Manual-only
+TC_EXP_009,Expense Create,Negative,High,Add Expense form open,Category not selected,"1. Enter amount & date
+2. Leave category empty
+3. Save",Category mandatory error; not saved,,Not Executed,Manual-only
+TC_EXP_010,Expense Create,Positive,Low,Add Expense form open,Description empty,"1. Fill required fields only
+2. Leave description blank
+3. Save",Expense saved if description optional per AC,,Not Executed,Manual-only
+TC_EXP_011,Expense Create,UI,Medium,Mock/real Add Expense UI,N/A,"1. Verify data-testid input-amount, select-category, btn-save-expense exist
+2. Confirm category options usable",Locator contract satisfied for expense modal/form,,Not Executed,Automated via ExpensePage + mockHTML
+TC_EXP_012,Expense Create,Error-handling,Medium,Add Expense form; API down simulated,Valid expense payload,"1. Fill valid expense
+2. Save while API returns 500",User-friendly error; no silent failure; form data not lost unexpectedly,,Not Executed,Manual-only
+TC_EXP_013,Expense View,Positive,High,User has expenses,N/A,"1. Open expense list / table-expenses
+2. Verify columns Date, Category, Description, Amount",Paginated table shows user's expenses correctly,,Not Executed,Automated verifyTable on mock seed data
+TC_EXP_014,Expense View,Positive,Medium,User has more expenses than page size,N/A,"1. Navigate pagination controls
+2. Move next/prev",Pagination works; no duplicate/missing rows incorrectly,,Not Executed,Manual-only
+TC_EXP_015,Expense View,Integration,High,Two registered users A and B,A and B each have distinct expenses,"1. Login as A → note expenses
+2. Logout
+3. Login as B → view list",Strict user isolation; B never sees A's expenses (REQ-03/04),,Not Executed,Manual-only
+TC_EXP_016,Expense Edit,Positive,High,Expense exists in list,Change amount 50 → 75; keep valid date,"1. Click Edit on a row
+2. Update amount
+3. Save",Row updated; dashboard totals refresh accordingly,,Not Executed,Manual-only
+TC_EXP_017,Expense Edit,Positive,Medium,Expense exists,Change category Food → Travel,"1. Edit expense
+2. Change category
+3. Save",Category updated; pie chart/dashboard category breakdown updates,,Not Executed,Manual-only
+TC_EXP_018,Expense Edit,Negative,Medium,Edit modal open,Set amount to -1 or future date,"1. Open edit
+2. Enter invalid amount/date
+3. Save",Same validation rules as create; update rejected,,Not Executed,Manual-only
+TC_EXP_019,Expense Edit,UI,Low,Edit modal open,N/A,1. Click Cancel/Close without saving,No changes persisted; list unchanged,,Not Executed,Manual-only
+TC_EXP_020,Expense Delete,Positive,High,Expense exists,Target expense ID/row known,"1. Click Delete
+2. Confirm deletion",Expense removed from table; totals updated,,Not Executed,Manual-only
+TC_EXP_021,Expense Delete,Negative,Medium,Delete confirmation shown,N/A,"1. Click Delete
+2. Cancel confirmation",Expense remains; no change to totals,,Not Executed,Manual-only
+TC_EXP_022,Expense Delete,Integration,High,Expense visible on dashboard recent list,N/A,"1. Delete expense
+2. Refresh dashboard",Removed from recent list; Total Spent decreased,,Not Executed,Manual-only
+TC_VAL_001,Validation,Negative,High,Add Expense form,Amount: abc,"1. Enter non-numeric amount
+2. Save",Numeric-only validation; blocked,,Not Executed,Manual-only
+TC_VAL_002,Validation,Boundary,Medium,Add Expense form,Description with unicode/emoji 😀,"1. Enter unicode description
+2. Save",Accepted or sanitized per product rules; no crash,,Not Executed,Manual-only
+TC_VAL_003,Validation,Boundary,Medium,Add Expense / Registration fields,Leading/trailing spaces in email or amount,"1. Enter '  user@test.com  '
+2. Submit login/register",Spaces trimmed or rejected consistently; no duplicate weird accounts,,Not Executed,Manual-only
+TC_SEC_001,Security,Negative,High,Login page,Email: ' OR 1=1 --,"1. Enter SQL injection string in email/password
+2. Submit",No SQL injection success; generic auth error; no DB error leakage,,Not Executed,Manual-only
+TC_SEC_002,Security,Negative,High,Expense description field,Description: <script>alert(1)</script>,"1. Save expense with XSS payload
+2. View list/dashboard",Script not executed; output escaped/sanitized,,Not Executed,Manual-only
+TC_SEC_003,Security,Negative,High,Logged-out browser,Direct URL to /dashboard or expense APIs,"1. Logout
+2. Paste protected URL",Redirect to Login; 401/403; no sensitive data in URL query,,Not Executed,Manual-only
+TC_SEC_004,Security,Positive,Medium,Dev/network tools available on staging,N/A,"1. Register/login
+2. Inspect stored password in DB/network (staging only)",Passwords hashed at rest; not sent back in responses,,Not Executed,Manual-only (staging)
+TC_UI_001,UI,UI,Medium,All main screens,N/A,"1. Verify consistent fonts, spacing, primary buttons
+2. Check error banner styling (msg-error)",UI consistent; errors readable (color + text),,Not Executed,Manual-only
+TC_UI_002,UI,UI,Medium,"Forms: Login, Register, Expense",N/A,"1. Check required field indicators (*)
+2. Verify error messages near fields",Mandatory fields indicated; errors clear and associated,,Not Executed,Manual-only
+TC_UI_003,UI,UI,Low,Keyboard only,N/A,1. Navigate Login and Expense forms using Tab/Enter only,All primary actions reachable; focus visible,,Not Executed,Manual-only
+TC_INT_001,Integration,Integration,High,Fresh user journey,New user + one expense,"1. Register
+2. Login
+3. Open Dashboard
+4. New Transaction
+5. Save expense
+6. Verify table + total",End-to-end happy path succeeds across modules,,Not Executed,Manual-only full E2E; automation covers login+expense pieces on mock
+TC_INT_002,Integration,Integration,High,Logged in user,Create → Edit → Delete one expense,"1. Create expense
+2. Edit amount
+3. Delete expense
+4. Check dashboard after each step",Dashboard and list stay consistent after each CRUD operation,,Not Executed,Manual-only
+TC_INT_003,Integration,Integration,Medium,Navigation map from SRS,N/A,"1. Landing → Sign In → Login
+2. Login → Dashboard
+3. Dashboard → New Transaction
+4. Expense List → Edit modal
+5. Logo → Dashboard",Navigation matches SRS UI flow table,,Not Executed,Manual-only
+TC_XB_001,Cross Browser,Cross-browser,High,Latest Chrome installed,Valid login + create expense smoke,"1. Run smoke: Login → Dashboard Total Spent → New Transaction → Save
+2. On Chrome",Core flows work on Chrome,,Not Executed,Automated Chromium project
+TC_XB_002,Cross Browser,Cross-browser,High,Latest Firefox,Same smoke,1. Execute smoke on Firefox,Core flows work on Firefox,,Not Executed,Automated Firefox project
+TC_XB_003,Cross Browser,Cross-browser,High,Latest Edge,Same smoke,1. Execute smoke on Edge,Core flows work on Edge,,Not Executed,Manual-only (Playwright config has chromium/firefox/webkit)
+TC_XB_004,Cross Browser,Cross-browser,High,Latest Safari / WebKit,Same smoke,1. Execute smoke on Safari/WebKit,Core flows work on Safari,,Not Executed,Automated WebKit project
+TC_ERR_001,Error Handling,Error-handling,High,Staging with fault injection,Force API 500 on dashboard,"1. Login
+2. Trigger dashboard API failure",Friendly error/empty state; app does not crash; retry option if designed,,Not Executed,Manual-only
+TC_ERR_002,Error Handling,Error-handling,Medium,Network offline,Browser offline mode,"1. Go offline
+2. Attempt save expense",Network failure message; no false success,,Not Executed,Manual-only
+TC_ERR_003,Error Handling,Error-handling,Medium,Unknown route,URL /this-page-does-not-exist,1. Navigate to invalid route while logged in/out,404 page or redirect; no stack trace to user,,Not Executed,Manual-only
+TC_ERR_004,Reporting,Positive,Medium,Playwright framework with Allure configured,failure.spec intentional non-existent testid,"1. Run failure.spec
+2. Generate/open Allure report",Failed test present; screenshot of mock UI attached,,Not Executed,Automated (failure.spec + allure-playwright)
+TC_REG_ALL_001,Regression Smoke,Positive,Critical,Build deployed / mock framework ready,Valid user + sample expense,"1. Login valid
+2. Dashboard total visible
+3. New transaction
+4. Enter amount+category
+5. Save
+6. Verify expenses table",Smoke path green; blockers none,,Not Executed,Automated across login/dashboard/expense specs on mock
+TC_EXPLORE_001,Exploratory,Exploratory,Medium,Logged in; multiple categories,Rapidly add 20 expenses in <1 minute,"1. Quickly create many expenses
+2. Watch dashboard total and pie chart updates
+3. Note UI lag or race conditions",No corrupted totals; UI remains usable; document any race findings,,Not Executed,Manual exploratory
+TC_EXPLORE_002,Exploratory,Exploratory,Medium,Two browsers same account,Browser A and B logged in as same user,"1. Create expense in A
+2. Refresh B
+3. Delete in B while editing in A",Observe sync/conflict behavior; note whether last-write-wins or errors shown,,Not Executed,Manual exploratory
+TC_EXPLORE_003,Exploratory,Exploratory,Low,Mobile device or emulation,iPhone/Android width,"1. Complete login + add expense on small screen
+2. Try landscape orientation","Document usability issues (tap targets, keyboard covering inputs)",,Not Executed,Manual exploratory
+TC_EXPLORE_004,Exploratory,Exploratory,Low,Copy-paste & autofill,Browser password manager autofill,"1. Use browser autofill on Login
+2. Paste amount with currency symbol '$12.50'",Autofill works; currency symbols handled/rejected cleanly,,Not Executed,Manual exploratory
