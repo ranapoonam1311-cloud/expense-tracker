@@ -1,10 +1,28 @@
+/**
+ * mockHTML — static Expense Tracker page used by Playwright via page.setContent().
+ *
+ * Why a mock?
+ * - No live app/server required for this practice framework.
+ * - Stable data-testid attributes for getByTestId()-based POM locators.
+ *
+ * Important test IDs embedded below:
+ * input-email, input-password, btn-login, msg-error,
+ * text-total-spent, btn-new-transaction,
+ * input-amount, select-category, btn-save-expense, table-expenses
+ *
+ * Note: There is no JavaScript — clicks do not change state; tests assert
+ * visibility, filled values, and seed table content.
+ */
 export const mockHTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Character encoding for the document -->
   <meta charset="UTF-8" />
+  <!-- Responsive layout on mobile/desktop -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Expense Tracker</title>
   <style>
+    /* Design tokens (CSS variables) for colors, shadow, radius */
     :root {
       --bg: #f0f4f8;
       --surface: #ffffff;
@@ -215,11 +233,15 @@ export const mockHTML = `<!DOCTYPE html>
   </style>
 </head>
 <body>
+  <!-- Page wrapper: centers content and stacks sections vertically -->
   <div class="page">
     <h1>Expense <span>Tracker</span></h1>
 
+    <!-- ========== LOGIN SECTION ========== -->
+    <!-- Used by LoginPage: input-email, input-password, btn-login, msg-error -->
     <section class="card" aria-labelledby="login-heading">
       <h2 id="login-heading">Sign in</h2>
+      <!-- Always visible in this static mock (for invalid-login assertions) -->
       <div data-testid="msg-error">Invalid email or password. Please try again.</div>
       <label for="email">Email</label>
       <input
@@ -240,9 +262,12 @@ export const mockHTML = `<!DOCTYPE html>
       <button type="button" data-testid="btn-login" class="btn-block">Log in</button>
     </section>
 
+    <!-- ========== DASHBOARD SECTION ========== -->
+    <!-- Used by DashboardPage: text-total-spent, btn-new-transaction -->
     <section class="card summary" aria-labelledby="dashboard-heading">
       <div>
         <p class="summary-label" id="dashboard-heading">Total spent</p>
+        <!-- Seed total used by getTotalSpent() / currency regex assertions -->
         <p data-testid="text-total-spent">$1,284.50</p>
       </div>
       <button type="button" data-testid="btn-new-transaction" class="btn-outline">
@@ -250,6 +275,8 @@ export const mockHTML = `<!DOCTYPE html>
       </button>
     </section>
 
+    <!-- ========== ADD EXPENSE FORM ========== -->
+    <!-- Used by ExpensePage: input-amount, select-category, btn-save-expense -->
     <section class="card" aria-labelledby="form-heading">
       <h2 id="form-heading">Add expense</h2>
       <div class="form-row">
@@ -266,6 +293,7 @@ export const mockHTML = `<!DOCTYPE html>
         </div>
         <div>
           <label for="category">Category</label>
+          <!-- option values must match selectCategory('food' | ...) in tests -->
           <select id="category" data-testid="select-category">
             <option value="">Select category</option>
             <option value="food">Food</option>
@@ -281,6 +309,8 @@ export const mockHTML = `<!DOCTYPE html>
       </button>
     </section>
 
+    <!-- ========== EXPENSES TABLE ========== -->
+    <!-- Used by ExpensePage.verifyTable(); seed rows for assertions -->
     <section class="card" aria-labelledby="table-heading">
       <h2 id="table-heading">Recent expenses</h2>
       <table data-testid="table-expenses">
@@ -293,6 +323,7 @@ export const mockHTML = `<!DOCTYPE html>
           </tr>
         </thead>
         <tbody>
+          <!-- Seed row referenced by Save Expense test ("Grocery run") -->
           <tr>
             <td>2026-07-28</td>
             <td><span class="category-tag">Food</span></td>
