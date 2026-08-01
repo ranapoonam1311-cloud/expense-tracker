@@ -37,7 +37,7 @@ Tests run against a local **mock HTML** page (no live app server required), so y
 smart-expense-framework/
 ├── .github/workflows/
 │   └── playwright.yml          # CI: install, test, upload Allure artifacts
-├── docs/                       # Notes (Framework, Allure, Cursor AI, etc.)
+├── docs/                       # Notes + Interview-QA.md (Freshers & 2 YOE)
 ├── mock/
 │   └── mockHTML.ts             # Mock Expense Tracker HTML (export const mockHTML)
 ├── pages/
